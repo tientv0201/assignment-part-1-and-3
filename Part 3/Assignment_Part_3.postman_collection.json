@@ -1,0 +1,538 @@
+{
+	"info": {
+		"_postman_id": "bb7c05ad-02a0-4209-84be-7f0008772c48",
+		"name": "Assignment_Part_3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2830881"
+	},
+	"item": [
+		{
+			"name": "Test case of Create New User",
+			"item": [
+				{
+					"name": "Success With Valid All Field",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"baseUrl\")+\"/users\",\r",
+									"    method: \"GET\",\r",
+									"    header: {\r",
+									"        'Accept': 'application/json',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }    \r",
+									"}, function (err, res) {\r",
+									"    var maxUser = res.json().length\r",
+									"    pm.environment.set(\"newUserId\", maxUser + 1);\r",
+									"});\r",
+									"\r",
+									"var currentTime = moment().format((\"hhmmss\"))\r",
+									"pm.environment.set(\"newUsername\", \"john\"+currentTime);\r",
+									"pm.environment.set(\"newEmail\", \"john\"+currentTime+\"@example.com\")\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test('Verify status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})\r",
+									"\r",
+									"var expectId = pm.environment.get(\"newUserId\")\r",
+									"var expectUsername = pm.environment.get(\"newUsername\") \r",
+									"var expectEmail = pm.environment.get(\"newEmail\")\r",
+									"var expectPassword = pm.environment.get(\"password\")\r",
+									"\r",
+									"pm.test('Verify id field is '+expectId, function () {\r",
+									"    pm.expect(responseJson.id).to.eql(expectId);\r",
+									"})\r",
+									"pm.test('Verify username field is '+expectUsername, function () {\r",
+									"    pm.expect(responseJson.username).to.eql(expectUsername);\r",
+									"})\r",
+									"\r",
+									"pm.test('Verify email field is '+expectEmail, function () {\r",
+									"    pm.expect(responseJson.email).to.eql(expectEmail);\r",
+									"})\r",
+									"\r",
+									"pm.test('Verify password field is '+expectPassword, function () {\r",
+									"    pm.expect(responseJson.password).to.eql(expectPassword);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"id\": {{newUserId}},\r\n        \"username\": \"{{newUsername}}\",\r\n        \"email\": \"{{newEmail}}\",\r\n        \"password\": \"{{password}}\"\r\n    }"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Success With Blank All Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJson = pm.response.json();\r",
+									"pm.test('Verify status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})\r",
+									"var expectId = pm.environment.get(\"newUserId\")\r",
+									"pm.test('Verify id field is '+expectId, function () {\r",
+									"    pm.expect(responseJson.id).to.eql(expectId);\r",
+									"})\r",
+									"pm.test('Verify username field is not existing', function () {\r",
+									"    pm.expect(responseJson).not.have.property('username');\r",
+									"})\r",
+									"\r",
+									"pm.test('Verify email field is not existing', function () {\r",
+									"    pm.expect(responseJson).not.have.property('email');\r",
+									"})\r",
+									"\r",
+									"pm.test('Verify password field is not existing', function () {\r",
+									"    pm.expect(responseJson).not.have.property('password');\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"baseUrl\")+\"/users\",\r",
+									"    method: \"GET\",\r",
+									"    header: {\r",
+									"        'Accept': 'application/json',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }    \r",
+									"}, function (err, res) {\r",
+									"    var maxUser = res.json().length\r",
+									"    pm.environment.set(\"newUserId\", maxUser + 1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Failed With Invalid Id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"baseUrl\")+\"/users\",\r",
+									"    method: \"GET\",\r",
+									"    header: {\r",
+									"        'Accept': 'application/json',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }    \r",
+									"}, function (err, res) {\r",
+									"    var firstExistUser = res.json()[0];\r",
+									"    pm.environment.set(\"existUserId\", firstExistUser.id);\r",
+									"    pm.environment.set(\"existUserUsername\", firstExistUser.username);\r",
+									"    pm.environment.set(\"existUserEmail\", firstExistUser.email);\r",
+									"    pm.environment.set(\"existUserPassword\", firstExistUser.password);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test('Verify status code is 500', function () {\r",
+									"    pm.response.to.have.status(500);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"id\": {{existUserId}},\r\n        \"username\": \"{{existUserUsername}}\",\r\n        \"email\": \"{{existUserEmail}}\",\r\n        \"password\": \"{{existUserPassword}}\"\r\n    }"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Write flow test API",
+			"item": [
+				{
+					"name": "Create a user successfully",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"baseUrl\")+\"/users\",\r",
+									"    method: \"GET\",\r",
+									"    header: {\r",
+									"        'Accept': 'application/json',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }    \r",
+									"}, function (err, res) {\r",
+									"    var maxUser = res.json().length\r",
+									"    pm.environment.set(\"newUserId\", maxUser + 1);\r",
+									"});\r",
+									"\r",
+									"var currentTime = moment().format((\"hhmmss\"))\r",
+									"pm.environment.set(\"newUsername\", \"john\"+currentTime);\r",
+									"pm.environment.set(\"newEmail\", \"john\"+currentTime+\"@example.com\")\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test('Verify status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"})\r",
+									"\r",
+									"var expectId = pm.environment.get(\"newUserId\")\r",
+									"var expectUsername = pm.environment.get(\"newUsername\") \r",
+									"var expectEmail = pm.environment.get(\"newEmail\")\r",
+									"var expectPassword = pm.environment.get(\"password\")\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"id\": {{newUserId}},\r\n        \"username\": \"{{newUsername}}\",\r\n        \"email\": \"{{newEmail}}\",\r\n        \"password\": \"{{password}}\"\r\n    }"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search product with category is  Electronics",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// var moment = require('moment');\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"baseUrl\")+\"/categories\",\r",
+									"    method: \"GET\",\r",
+									"    header: {\r",
+									"        'Accept': 'application/json',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    params: {\r",
+									"        \"name\":\"Electronics\"\r",
+									"    }    \r",
+									"}, function (err, res) {\r",
+									"    var responseData = res.json()[0];\r",
+									"    pm.environment.set(\"electronicsCategoryId\", responseData.id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test('Verify status code is 200', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"pm.environment.set(\"productIdWithElectronicCategory\", responseJson[0].id)\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products?categoryId={{electronicsCategoryId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": "{{electronicsCategoryId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Place an order with a product of the previous step successfully",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"baseUrl\")+\"/orders\",\r",
+									"    method: \"GET\",\r",
+									"    header: {\r",
+									"        'Accept': 'application/json',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }    \r",
+									"}, function (err, res) {\r",
+									"    var maxUser = res.json().length\r",
+									"    pm.environment.set(\"newOrderId\", maxUser + 1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJson = pm.response.json()\r",
+									"\r",
+									"pm.test('Verify status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Verify orderId is '+pm.environment.get(\"newOrderId\"), function () {\r",
+									"    pm.expect(responseJson.id).to.eql(pm.environment.get(\"newOrderId\"));\r",
+									"});\r",
+									"pm.test('Verify userId is '+pm.environment.get(\"newUserId\"), function () {\r",
+									"    pm.expect(responseJson.userId).to.eql(pm.environment.get(\"newUserId\"));\r",
+									"});\r",
+									"pm.test('Verify productId is '+pm.environment.get(\"productIdWithElectronicCategory\"), function () {\r",
+									"    pm.expect(responseJson.items[0].productId).to.eql(pm.environment.get(\"productIdWithElectronicCategory\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": {{newOrderId}},\r\n    \"userId\": {{newUserId}},\r\n    \"status\": \"shipped\",\r\n    \"items\": [\r\n        {\r\n            \"productId\": {{productIdWithElectronicCategory}},\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Write a review for the purchased product successfully",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"baseUrl\")+\"/reviews\",\r",
+									"    method: \"GET\",\r",
+									"    header: {\r",
+									"        'Accept': 'application/json',\r",
+									"        'Content-Type': 'application/json'\r",
+									"    }    \r",
+									"}, function (err, res) {\r",
+									"    var maxUser = res.json().length\r",
+									"    pm.environment.set(\"newReviewId\", maxUser + 1);\r",
+									"});\r",
+									"\r",
+									"var arrayComments = [\"Product is very good!\", \"Very fast delivery, safe packaging\", \"Very good, but could be better.\", \"I will buy from you many more times\"]\r",
+									"const random = Math.floor(Math.random() * arrayComments.length)\r",
+									"pm.environment.set(\"newComment\", arrayComments[random])"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJson = pm.response.json()\r",
+									"\r",
+									"pm.test('Verify status code is 201', function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('Verify reviewId is '+pm.environment.get(\"newReviewId\"), function () {\r",
+									"    pm.expect(responseJson.id).to.eql(pm.environment.get(\"newReviewId\"));\r",
+									"});\r",
+									"pm.test('Verify userId is '+pm.environment.get(\"newUserId\"), function () {\r",
+									"    pm.expect(responseJson.userId).to.eql(pm.environment.get(\"newUserId\"));\r",
+									"});\r",
+									"pm.test('Verify productId is '+pm.environment.get(\"productIdWithElectronicCategory\"), function () {\r",
+									"    pm.expect(responseJson.productId).to.eql(pm.environment.get(\"productIdWithElectronicCategory\"));\r",
+									"});\r",
+									"pm.test('Verify comment is '+pm.environment.get(\"newComment\"), function () {\r",
+									"    pm.expect(responseJson.comment).to.eql(pm.environment.get(\"newComment\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": {{newReviewId}},\r\n    \"userId\": {{newUserId}},\r\n    \"productId\": {{productIdWithElectronicCategory}},\r\n    \"rating\": 5,\r\n    \"comment\": \"{{newComment}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
